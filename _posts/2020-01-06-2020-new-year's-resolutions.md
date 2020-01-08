@@ -1,10 +1,10 @@
 ---
 title:  "2020 새해목표!"
 categories:
-  - Blog
-  - Post
+  - Life
 tags:
   - Blog
+  - NewYearsResolutions
 ---
 
 ## 2020 새해 목표
