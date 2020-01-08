@@ -5,6 +5,8 @@ categories:
 tags:
   - Blog
   - NewYearsResolutions
+toc: true
+toc_sticky: true  
 ---
 
 ## 2020 새해 목표
