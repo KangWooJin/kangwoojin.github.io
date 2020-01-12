@@ -3,7 +3,6 @@ title:  "2020 새해목표!"
 categories:
   - Life
 tags:
-  - Blog
   - NewYearsResolutions
 toc: true
 toc_sticky: true  
