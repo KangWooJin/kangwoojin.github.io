@@ -9,19 +9,22 @@ layout: single
 
 ### Service
 - - - 
-#### T-GO
-- 실시간 퀴즈쇼를 통해서 상금을 지급
-
-#### [LINE LIVE DE](http://linelive.me/)
+#### [LINE LIVE DE](http://linelive.me/)(2018.01~2020.02)
 - 중동 타겟으로 만들어진 모바일 비디오 스트리밍 서비스
 
-#### [Sway](https://swaytime.me/en/)
+#### T-GO(2018.09~2018.12)
+- 실시간 퀴즈쇼를 통해서 우승자들에게 상금을 지급하는 서비스
+
+#### [Sway](https://swaytime.me/en/)(2019.03~2020.02)
 - 중동 타겟으로 만들어진 실시간 모바일 매칭 서비스
+
+#### LINE 광고 DSP 개발(2020.02~)
+- LINE에 광고쪽 DSP 사이드의 CMS쪽 백엔드 개발 
 
 ### 토이 프로젝트
 - - -
 #### [Quiz Together](https://github.com/ChallengeProject/QuizTogether)
-- 언제어디서나 누구나 퀴즈쇼를 개설가능하고 참여 가능한 모바일 어플리케이션 서비스
+- 언제 어디서나 누구나 퀴즈쇼를 개설가능하고 참여 가능한 모바일 어플리케이션 서비스
 
 ### OpenSource
 - - -
