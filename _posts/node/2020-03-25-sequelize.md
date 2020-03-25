@@ -166,5 +166,6 @@ Executing (default): SELECT `id`, `username`, `date`, `task` FROM `task` AS `Tas
 반복적인 쿼리를 만들기 보다는 ORM을 통해서 생산성을 높이는데 집중할 수 있었던 것 같다.
 
 - - - 
+[sequelize](https://github.com/KangWooJin/slack-daily-bot) example은 해당 github에서 확인 가능합니다.
 
  
