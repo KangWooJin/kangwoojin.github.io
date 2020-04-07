@@ -7,6 +7,7 @@ tags:
 toc: true
 toc_sticky: true
 date: 2020-04-06 23:00:00+09:00 
+last_modified_at: 2020-04-07 23:00:00
 excerpt: Spring Boot, gradle에서 query dsl 셋팅히가
 ---
 
@@ -94,6 +95,14 @@ sourceSets {
             srcDirs = ['src/main/java', querydslSrcDir]
         }
     }
+}
+
+project.afterEvaluate {
+    project.tasks.compileQuerydsl.options.compilerArgs = [
+            "-proc:only",
+            "-processor", project.querydsl.processors() +
+                    ',lombok.launch.AnnotationProcessorHider$AnnotationProcessor'
+    ]
 }
 ```
 
@@ -194,10 +203,24 @@ sourceSets {
 ```
 
 query dsl plugin을 추가했을 때 사용할 수 있는 querydsl 파트인데
-자세한 옵션들은 [여기](https://github.com/ewerk/gradle-plugins/tree/master/querydsl-pluginhttps://github.com/ewerk/gradle-plugins/tree/master/querydsl-plugin)에서 확인할 수 있다.
+자세한 옵션들은 [여기](https://github.com/ewerk/gradle-plugins/tree/master/querydsl-plugin)에서 확인할 수 있다.
 
 여기서 가장 중요한 옵션은 jpa를 사용한다면 jpa 부분을 true로 해줘야 하고,
  source dir를 원하는 곳으로 하고 싶으면 `querydslSourcesDir`에 원하는 값으로 설정해줘야 한다.  
+
+```groovy
+project.afterEvaluate {
+    project.tasks.compileQuerydsl.options.compilerArgs = [
+            "-proc:only",
+            "-processor", project.querydsl.processors() +
+                    ',lombok.launch.AnnotationProcessorHider$AnnotationProcessor'
+    ]
+}
+```
+
+마지막으로 lombok을 사용한 다면 해당 옵션을 넣어줘야 compile시에 cannot find symbol 에러가
+발생하지 않는다!!
+
 
 ## 마치며
 실제로 query dsl을 사용하고 있는데 gradle의 query dsl만 generate해주는 기능이 없어
