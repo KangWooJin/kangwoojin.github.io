@@ -117,7 +117,7 @@ buildscript {
 }
 ```
 
-groovy에 대한 지식이 업ㅇ서 buildscript가 정확히 무엇을 하는지는 모르겠지만
+groovy에 대한 지식이 없어서 buildscript가 정확히 무엇을 하는지는 모르겠지만
 여기서 필요한 것은 `repositories`와 `querydsl plugin` 이다.
 
 query dsl의 plugin을 사용하기 위해서는 특정 저장소를 써야 다운로드 받아 지기에 반드시 plugin 저장소를 등록해야 한다.
@@ -173,7 +173,7 @@ dependencies {
 intellij에서 자동으로 추가해주는 옵션들을 제외하고는 query dsl을 위한 jpa, apt와
 lombok 관련된 설정이다.
 
-테스트 시에도 Qmodel을 사용하기 위해서는 lombok 설정을 넣으니 해결이 되었는데, 정확한 이유느 모르겠다.
+테스트 시에도 Qmodel을 사용하기 위해서는 lombok 설정을 넣으니 해결이 되었는데, 정확한 이유는 모르겠다.
 
 ```groovy
 def querydslSrcDir = 'src/main/generated'
@@ -196,7 +196,7 @@ sourceSets {
 query dsl plugin을 추가했을 때 사용할 수 있는 querydsl 파트인데
 자세한 옵션들은 [여기](https://github.com/ewerk/gradle-plugins/tree/master/querydsl-pluginhttps://github.com/ewerk/gradle-plugins/tree/master/querydsl-plugin)에서 확인할 수 있다.
 
-여기서 가장 중요한 옵션은 jpa를 사용한다면 jpa 부분을 tru로 해줘야 하고,
+여기서 가장 중요한 옵션은 jpa를 사용한다면 jpa 부분을 true로 해줘야 하고,
  source dir를 원하는 곳으로 하고 싶으면 `querydslSourcesDir`에 원하는 값으로 설정해줘야 한다.  
 
 ## 마치며
