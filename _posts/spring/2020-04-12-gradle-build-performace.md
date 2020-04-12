@@ -25,7 +25,7 @@ org.gradle.caching=true
 ```
 
 ## daemon
-gradle을 빌드시에 gradle daemon에 의해서 빌드가 되는데 기본 옵션은 true로 되어 있어서 굳이 할 셋팅할 필요는 없다.
+gradle을 빌드시에 gradle daemon에 의해서 빌드가 되는데 기본 옵션은 true로 되어 있어서 굳이 셋팅할 필요는 없다.
 
 daemon으로 background로 동작하게 되어 약 3시간 정도 떠있다가 자연스럽게 없어진다.
 
