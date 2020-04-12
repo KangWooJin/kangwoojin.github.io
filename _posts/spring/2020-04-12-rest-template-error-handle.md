@@ -49,59 +49,6 @@ class ExampleController {
 
 ## ExampleRestTemplate
 
-```kotlin
-@Component
-class ExampleRestTemplate {
-    private val restTemplate: RestTemplate = RestTemplate()
-    private val log = LoggerFactory.getLogger(javaClass)
-    private var errorHandlerRestTemplate: RestTemplate? = null
-
-    constructor(requestBuilder: RestTemplateBuilder) {
-        errorHandlerRestTemplate = requestBuilder.errorHandler(RestTemplateResponseErrorHandler()).build()
-    }
-
-    fun successExample(): String {
-        val result = restTemplate.getForEntity<String>("http://localhost:8080/example")
-        print(result)
-
-        return result.body.toString()
-    }
-
-    @Throws(BadRequest::class)
-    fun failExample(): String? {
-        var result: ResponseEntity<String>? = null
-        try {
-            result = restTemplate.getForEntity<String>("http://localhost:8080/badRequest")
-        } catch (e: HttpClientErrorException) {
-            log.error("exception {}", e.message, e)
-            throw BadRequest(e)
-        }
-        print(result)
-
-        return result.body?.toString()
-    }
-
-    fun failExampleByErrorHandler(): ExampleController.ExampleResponse? {
-        val result = errorHandlerRestTemplate?.postForEntity<ExampleController.ExampleResponse>("http://localhost:8080/badRequest")
-
-        printResponse(result)
-
-        return result?.body
-    }
-
-
-    private fun <T> printResponse(result: ResponseEntity<T>?) {
-        if (result == null) {
-            return
-        }
-        log.info("result status code {}", result.statusCode)
-        log.info("result body {}", result.body)
-        log.info("result headers {}", result.headers)
-        log.info("result statusCodeValue {}", result.statusCodeValue)
-    }
-}
-```
-
 - `RestTemplate` 정상 동작하고 있는지 확인 하기 위해 `/example`을 호출하는 테스트를 작성 한다.
 
 ```kotlin
@@ -147,6 +94,7 @@ internal fun badRequestTest() {
 ```
 
 - 해당 테스트를 성공 시키기 위해서 `/badRequest`를 호출하는 failExample을 구현
+
 ```kotlin
     @Throws(BadRequest::class)
     fun failExample(): String? {
@@ -167,6 +115,8 @@ internal fun badRequestTest() {
 - 따라서 `HttpClientErrorException`에 `e.getStatusCode()`를 통해서 error를 판단해야 한다.
 - 매번 try catch를 통해서 할 순 없으니 `RestTemplate`에 `errorHandle`을 추가하여 관리한다.
 
+### RestTemplateBuilder
+
 ```kotlin
 class RestTemplateResponseErrorHandler : DefaultResponseErrorHandler() {
     @Throws(IOException::class)
@@ -180,9 +130,6 @@ class RestTemplateResponseErrorHandler : DefaultResponseErrorHandler() {
             throw RuntimeException()
         } else if (httpResponse.statusCode.series() === HttpStatus.Series.CLIENT_ERROR) {
             // handle CLIENT_ERROR
-            if (httpResponse.statusCode === HttpStatus.NOT_FOUND) {
-                throw NotFoundException(message = httpResponse.body.toString(), exception = null)
-            }
         }
     }
 }
