@@ -1,7 +1,7 @@
 ---
 title: "[일본 드라마] 도망치는 건 부끄럽지만 도움이 된다 리뷰"
 categories:
-  - Life뷰
+  - Life
 tags:
   - Drama
 toc: true
