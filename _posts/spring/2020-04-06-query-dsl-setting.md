@@ -8,7 +8,7 @@ toc: true
 toc_sticky: true
 date: 2020-04-06 23:00:00+09:00 
 last_modified_at: 2020-04-07 23:00:00
-excerpt: Spring Boot, gradle에서 query dsl 셋팅히가
+excerpt: Spring Boot, gradle에서 query dsl 셋팅하기
 ---
 
 ## 들어가며
