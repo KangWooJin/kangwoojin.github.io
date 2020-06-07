@@ -208,7 +208,6 @@ new Vue({
 - 불필요한 부분을 제거하고 앞에서 작성했던 msg에 대해서 화면에 표시해보자.
 - `{{ page.vue_brace }}`안에 `<script>`에 정의해둔 method나 변수들을 작성하면 화면에 값을 렌더링할 수 있다.
 
-
 ![vue-data-render](/assets/images/vuejs/vue-data-render.png)
 
 - 같은 데이터이지만 서로 다른 방법으로 데이터를 표시하고 있다.
