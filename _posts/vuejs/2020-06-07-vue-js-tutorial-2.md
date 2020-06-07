@@ -6,7 +6,11 @@ tags:
   - Vuejs
 toc: true
 toc_sticky: true
-date: 2020-06-07 12:00:00+09:00 
+date: 2020-06-07 12:00:00+09:00
+vue_msg: "{{ msg }}"
+vue_message: "{{ message }}"
+vue_get_message: "{{ getMessage() }}"
+vue_brace: "{{}}"
 excerpt: 누구나 쉽게 따라할 수 있는 Vue.js tutorial을 통해서 오픈소스에 기여 해보자.
 ---
 
@@ -194,15 +198,16 @@ new Vue({
 ```vue
 <template>
   <div>
-    <div>@Props : {{ msg }}</div>
-    <div>computed : {{ message }}</div>
-    <div>method : {{ getMessage() }}</div>
+    <div>@Props : {{ page.vue_msg }}</div>
+    <div>computed : {{ page.vue_message }}</div>
+    <div>method : {{ page.vue_get_message }}</div>
   </div>
 </template>
 ```
 
+- 중괄호를 두번 작성하게 되면 화면에 표시가 되지 않아 중간에 `\`를 추가하였습니다.
 - 불필요한 부분을 제거하고 앞에서 작성했던 msg에 대해서 화면에 표시해보자.
-- `{{ }}`안에 `<script>`에 정의해둔 method나 변수들을 작성하면 화면에 값을 렌더링할 수 있다.
+- `{{ page.vue_brace }}`안에 `<script>`에 정의해둔 method나 변수들을 작성하면 화면에 값을 렌더링할 수 있다.
 
 
 ![vue-data-render](/assets/images/vuejs/vue-data-render.png)
