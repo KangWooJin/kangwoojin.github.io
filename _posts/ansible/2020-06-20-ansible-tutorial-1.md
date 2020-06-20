@@ -66,6 +66,57 @@ start {{ component }}
 sudo yum install -y ansible
 ```
 - 대부분 리눅스 서버를 사용하니 yum을 이용해 설치하는게 간단하다.
+- 혹시나 나중에 필요할 수도 있으니 ssh 관련 스크립트를 추가한다.
+
+### deploy key script  
+
+```
+#!/bin/bash
+
+if [[ "$#" -lt 1 ]]; then
+  echo "usage: deploy_key.sh key_file_name"
+  exit 1
+fi
+
+setup_log="\e[32m[Preparation]\[0m"
+
+base_dir=$(
+  cd $(dirname $0)
+  pwd
+)
+cd ${base_dir}
+
+user=$(whoami)
+key_file_name=$1
+
+key=$(cat ${key_file_name})
+echo -e "$setup_log Key: $key"
+
+function deploy_key() {
+  local home_dir=$1
+  cd ${home_dir}
+
+  if [[ ! -d .ssh ]]; then
+    mkdir -p .ssh
+    chmod 700 .ssh
+  fi
+
+  if [[ ! -f .ssh/authorized_keys ]]; then
+    echo "$key" >.ssh/authorized_keys
+    chmod 600 .ssh/authorized_keys
+  elif ! grep -qs "${key}" .ssh/authorized_keys; then
+    echo "$key" >>.ssh/authorized_keys
+    echo "key appended"
+  else
+    echo "key already exists"
+  fi
+}
+
+home_dir="/$user"
+echo -e "$setup_log Home Dir: ${home_dir}"
+
+deploy_key ${home_dir}
+```
 
 ## 설정
 - ansible에도 config가 존재 하는데 설치가 완료되면 `/etc/ansible/`를 global 값들이 설정된다.
@@ -166,4 +217,3 @@ ansible -i beta all -m ping
 **한 두번의 설정은 손으로 하면 되지** 라고 생각 했었는데, 이거를 다음에 또 할려고 하니 사람이 할게 아닌거 같았다.
 
 머리가 나쁘니 몸이 힘들어서, 몸을 편하게 하기 위해서 하나씩 쉽게 하는 법을 찾아보고 공부하는 것 같다.
- 
