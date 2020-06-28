@@ -17,7 +17,7 @@ Querydsl에서 JPQL을 실행할 때 flush mode에 따라 동작되는 방식을
 
 - JPA에서는 Query에 대해서 지연쓰기를 지원하기에 insert, update, delete를
 하더라도 flush가 발생하기 전까지는 db에 반영이 되지 않는다.
-- 그렇기에 강제로 flush를 하던지, commit을 해주어야 한다.
+- 그렇기에 flush를 하던지, commit을 해주어야 한다.
 
 ## FlushMode
 - `FlushModeType`는 `AUTO`, `COMMIT` 두 가지로 되어 있는 `enum`이다.
@@ -28,7 +28,7 @@ Querydsl에서 JPQL을 실행할 때 flush mode에 따라 동작되는 방식을
 2. JPQL/HQL의 쿼리 실행 전
 3. native SQL이 실행되기 전
 
-### AutoFlush
+## Test
 
 ```java
 @Entity
