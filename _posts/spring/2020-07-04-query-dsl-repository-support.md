@@ -13,6 +13,8 @@ excerpt: JpaRepository를 확장해보고, QuerydslRepositorySupport를 이용�
 ## 들어가며
 JpaRepository를 확장해보고, QuerydslRepositorySupport를 이용해 custom query를 작성해 보자.
 
+layer와 상관없이 무분별하게 사용되고 있는 querydsl을 `Repository` layer에서만 사용될 수 있게 개선 해보자. 
+
 ## JpaRepository 생성 하기
 
 ```java
@@ -52,7 +54,7 @@ public interface CampaignCustomRepository {
 }
 ```
 
-- custom하게 사용할 `interface` 기반 `Repository`를 생성 한다.
+- custom하게 사용할 `Interface` 기반 `Repository`를 생성 한다.
 
 ```java
 public interface CampaignRepository extends JpaRepository<Campaign, Long>, CampaignCustomRepository {
@@ -130,14 +132,15 @@ Hibernate:
 
 - spring boot 2.2.0 부터 Test에서 생성자 주입이 가능하게 변경되어 `TestConstructor`을 사용하면 생성자 주입이 가능하다.
 - `DataJpaTest`을 통해서 `Repository` layer 만 주입 받도록 한다.
+- 테스트가 정상적으로 잘 동작한다.
 
 ## 주의사항
 
 - `JpaRepository`를 확장할 때 구현 class의 이름은 `Impl`로 끝나야 한다.
 - 만약 `Impl`로 끝나지 않는 경우 `@EnableJpaRepositories(repositoryImplementationPostfix = "Impl")`을 통해서 postFix를 변경해줘야 한다.
 
-## 더 나아가기
-- `QuerydslRepositorySupport`는 `JPQLQuery`를 사용하기에 `from`으로 시작 되어야 하는 제약조건이 있다.
+## select로 시작하게 변경하기
+- `QuerydslRepositorySupport`는 `from`으로 시작 되어야 하는 제약조건이 있다.
 - 보통 쿼리는 `select`로 시작하기도 하고 Querydsl을 사용할 때 `JPAQuery`을 사용 하기에, `JPAQuery`로 사용할 수 있게 변경 해보자.
 
 ```java
@@ -177,6 +180,6 @@ public abstract class QuerydslCustomRepositorySupport extends QuerydslRepository
 
 
 - - - 
-[flushModeTest](https://github.com/KangWooJin/spring-study/blob/master/querydsl/src/test/java/kangwoojin/github/io/querydsl/FlushModeTest.java)
+[querydslRepositorySupport](https://github.com/KangWooJin/spring-study/commit/f31ca4c6f85fa18471c22a8ef8f5797302eaeea4)
 관련 example code는 github에 올려두었으니 참고~!
  
