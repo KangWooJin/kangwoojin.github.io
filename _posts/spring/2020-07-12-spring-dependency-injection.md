@@ -121,7 +121,7 @@ public class SetterService {
 }
 ```
 
-- `SetterService` 또한 앞에 Service들과 같아 바로 Bean으로 등록 된다.
+- `SetterService` 또한 앞에 Service들처럼 바로 Bean으로 등록 된다.
 - `MainService`에 Setter 주입시에는, 모든 필드 값이 생성되어 지는 것을 확인 할 수 있다.
 - 도대체 필드 주입은 언제 발생했길래, 생성자 주입시에는 없고, Setter 주입에는 있을까?
 
