@@ -12,7 +12,7 @@ excerpt: Spring Boot, gradle에서 query dsl 셋팅하기
 ---
 
 ## 들어가며
-예전에 [query dsl 관련 셋팅]({% post_url jpa/2020-02-23-query-dsl-setting %})을 올려두었는데
+예전에 [query dsl 관련 셋팅]({% post_url jpa/2020-02-23-query-dsl-setting-old %})을 올려두었는데
 컴파일 시점에 model을 생성하고 모델이 변경되었을 때 찾지 못하는 문제가 있었다.
 
 내가 잘 못 셋팅했을 수도 있지만 해당 방식보다 좀 더 쉽고 최근 방식이 있는거 같아서 또 다른 방법을 올려둔다.
