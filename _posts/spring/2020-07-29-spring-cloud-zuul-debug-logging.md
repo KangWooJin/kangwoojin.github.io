@@ -319,6 +319,7 @@ public class StatsFilter extends ZuulFilter {
 
 - `requestDebug`, `routingDebug`에 설정된 값을 logger를 통해서 print 해주는 Filter를 추가해야 한다.
 - 해당 부분도 zuul에서 제공해주지 않는다..ㅠ
+- 해당 debug filter를 적용하면 아래와 비슷한 데이터가 출력 된다.
 
 ```
 ZUUL_DEBUG::Filter pre 5 PreDecorationFilter
