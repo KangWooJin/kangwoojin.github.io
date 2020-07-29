@@ -76,12 +76,6 @@ layout: default
   {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}
     <div class="page__related">
-      <div>
-        <script src="https://ads-partners.coupang.com/g.js"></script>
-        <script>
-          new PartnersCoupang.G({ id:199002 });
-        </script>
-      </div>
       <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
       <div class="grid__wrapper">
         {% for post in site.related_posts limit:4 %}
