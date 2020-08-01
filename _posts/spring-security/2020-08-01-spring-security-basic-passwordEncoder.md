@@ -18,7 +18,9 @@ PasswordEncoder의 역할은 무엇이고, 언제 동작하는지 알아보자.
 3. PasswordEncoder는 언제 동작하는가?
 
 ## PasswordEncoder의 역할은 무엇인가?
-- `PasswordEncoder`는 password를 암호화해서 사용자의 password를 더 안전하게 하기 위한 용도로 사용 된다.
+- `PasswordEncoder`는 password를 암호화해서 사용자의 password를 더 안전하게 보관 하기 위한 용도로 사용 된다.
+- 사용자로부터 입력 받은 password와 저장 되어 있는 User의 password를 비교하여 일치하는지 확인하는 용도로 사용 된다.
+
   
 ## PasswordEncoder는 언제 등록 되는가?
 - `InitializeUserDetailsBeanManagerConfigurer`에서 `init`후 `InitializeUserDetailsManagerConfigurer`이 configure될 때
@@ -72,9 +74,11 @@ public boolean matches(CharSequence rawPassword, String prefixEncodedPassword) {
 }
 ``` 
 
-- password가 encoder에 의해서 encode 되면, `{알고리즘}password`형태의 password로 저장되게 된다.
-- `{알고리즘}` 부분을 extract하여 encoder를 찾게되는데, encoder가 없어 `delegate == null`로 되어 버린다.
-- 따라서 `defaultPasswordEncoderForMatches`의 로직을 타는데 default는 `UnmappedIdPasswordEncoder` 해당 encoder로 되어 있다.
+- password가 encoder에 의해서 encode 되면, `"{알고리즘}password"`형태의 password로 저장되게 된다.
+- password를 저장할때 passwordEncoder가 extract할 수 있는 포맷으로 저장하지 않는 경우
+`"{알고리즘}"` 부분을 통해 encoder를 찾게되는데, encoder가 없어 `delegate == null`로 되어 버린다.
+- 따라서 `defaultPasswordEncoderForMatches`의 로직을 타게되는데
+ default는 `UnmappedIdPasswordEncoder`로 되어 있다.
 
 ```java
 private class UnmappedIdPasswordEncoder implements PasswordEncoder {
@@ -91,6 +95,7 @@ private class UnmappedIdPasswordEncoder implements PasswordEncoder {
 ```
 
 - `UnmappedIdPasswordEncoder`의 메소드가 호출되는 경우 에러가 발생하게 되어 있으니.. `passwordEncoder`가 등록이 잘 되었는지 확인하는 것도 중요하다.
+
 ### PasswordEncoder 등록하기
 
 ```java
@@ -160,4 +165,6 @@ protected void additionalAuthenticationChecks(UserDetails userDetails,
 }
 ```
 
-
+## 마치며
+- 설명한 방식은 많은 설정을 하지 않고 대부분 default 설정을 이용한 상태에서 동작 과정을 확인하였다.
+- 실제로 `AbstractUserDetailsAuthenticationProvider`를 사용하지 않는 경우 해당 부분이 사용되지 않으니 참고하면 좋을 것 같다. 
