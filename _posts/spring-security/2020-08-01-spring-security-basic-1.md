@@ -1,5 +1,5 @@
 ---
-title: "[Spring Security] Spring Security Basic - 1" 
+title: "[Spring Security] Spring Security Basic - Configuration" 
 categories:
   - Programing
 tags:
@@ -7,7 +7,7 @@ tags:
 toc: true
 toc_sticky: true
 date: 2020-08-01 08:00:00+09:00 
-excerpt: Spring Security가 어떻게 동작하는지, 어떻게 설정하는지에 대해서 알아보자.
+excerpt: Spring Security의 Configuration이 어떻게 동작하는지, 어떻게 설정하는지에 대해서 알아보자.
 ---
 
 ## 들어가며
