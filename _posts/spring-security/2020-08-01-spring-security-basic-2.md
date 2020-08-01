@@ -15,6 +15,7 @@ SpringSecurity에서 제공하는 UserDetailsService 인터페이스에 대해�
 
 1. UserDetailsService의 역할은 무엇인가?
 2. UserDetailsService는 언제 동작하는가?
+3. UserDetailsService가 언제 등록 되는가?
 
 ## UserDetailsService의 역할은 무엇인가?
 
@@ -195,3 +196,51 @@ protected final UserDetails retrieveUser(String username,
 
 - `ProviderManager`에 등록되어 있는 `AuthenticationProvider`중에서 User 정보를 읽어서 확인하는
 과정에 `UserDetailsService`가 사용이 되는 것을 확인할 수 있다.
+
+## UserDetailsService가 언제 등록 되는가?
+- `InitializeUserDetailsBeanManagerConfigurer`에서 `UserDetilasService`가 Bean으로 등록되어 있는 경우
+`DaoAuthenticationProvider`에 `userDetailsService`로 등록 된다.
+
+```java
+public void configure(AuthenticationManagerBuilder auth) throws Exception {
+  if (auth.isConfigured()) {
+    return;
+  }
+  UserDetailsService userDetailsService = getBeanOrNull(
+    UserDetailsService.class);
+  if (userDetailsService == null) {
+    return;
+  }
+
+  PasswordEncoder passwordEncoder = getBeanOrNull(PasswordEncoder.class);
+  UserDetailsPasswordService passwordManager = getBeanOrNull(UserDetailsPasswordService.class);
+
+  DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+  provider.setUserDetailsService(userDetailsService);
+  if (passwordEncoder != null) {
+    provider.setPasswordEncoder(passwordEncoder);
+  }
+  if (passwordManager != null) {
+    provider.setUserDetailsPasswordService(passwordManager);
+  }
+  provider.afterPropertiesSet();
+
+  auth.authenticationProvider(provider);
+}
+```
+
+```java
+private <T> T getBeanOrNull(Class<T> type) {
+  String[] beanNames = InitializeUserDetailsBeanManagerConfigurer.this.context
+			.getBeanNamesForType(type);
+  if (beanNames.length != 1) {
+    return null;
+  }
+
+  return InitializeUserDetailsBeanManagerConfigurer.this.context
+			.getBean(beanNames[0], type);
+}
+```
+
+- 2개 이상의 UserDetailsService가 등록되어 있는 경우, 어떤 것을 사용해야 할지 모르기 때문에
+`DaoAuthenticationProvider`에 userDetailsService가 등록되지 않게 된다.
