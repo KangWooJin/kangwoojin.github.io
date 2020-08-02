@@ -3,7 +3,7 @@ title: "[Spring Security] Spring Security Basic - Configuration"
 categories:
   - Programing
 tags:
-  - Spring
+  - SpringSecurity
 toc: true
 toc_sticky: true
 date: 2020-08-01 08:00:00+09:00 
