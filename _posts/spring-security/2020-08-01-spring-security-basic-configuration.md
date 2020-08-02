@@ -6,7 +6,7 @@ tags:
   - SpringSecurity
 toc: true
 toc_sticky: true
-date: 2020-08-01 08:00:00+09:00 
+date: 2020-08-01 12:00:00+09:00 
 excerpt: Spring Security의 Configuration이 어떻게 동작하는지, 어떻게 설정하는지에 대해서 알아보자.
 ---
 
