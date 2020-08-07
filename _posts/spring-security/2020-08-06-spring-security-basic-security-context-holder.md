@@ -6,7 +6,8 @@ tags:
   - SpringSecurity
 toc: true
 toc_sticky: true
-date: 2020-08-06 12:00:00+09:00 
+date: 2020-08-06 12:00:00+09:00
+last_modified_at: 2020-08-07 22:00:00 
 excerpt: Security Context Holder가 하는 역할과 생성 과정을 알아 보자.
 ---
 
@@ -244,7 +245,162 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 - `AbstractAuthenticationProcessingFilter`는 `attemptAuthentication` 메소드 뜻 그대로 인증을 시도 하는 filter이다.
 - `authResult`가 Authenticatioon 데이터를 담고 있고, `doFilter` 마지막에 성공인 경우 `successfulAuthentication`에서
 `SecurityContextHolder`에 `authResult`를 저장한다.
+- 이번에는 실제로 `authResult`를 만드는 `authentication`을 처리하는 곳은 어디인지 알아보자.
+
+### AuthenticationManager
+
+```java
+public interface AuthenticationManager {
+	Authentication authenticate(Authentication authentication) throws AuthenticationException;
+}
+```
+
+- `Authentication`을 받아서 `Authentication`을 제공하는 인터페이스이다.
+- 파라메터로 받은 `Authentication`은 사용자로부터 입력받은 유저 정보이고, return 값은 인증을 완료한 유저 데이터를 전달 한다.
+- 인터페이스로 되어 있으니, 실제로 구현 class는 무엇인지 알아 보자.
+
+### ProviderManager
+
+```java
+public class ProviderManager implements AuthenticationManager, MessageSourceAware,
+		InitializingBean {
+	...
+	public Authentication authenticate(Authentication authentication)
+			throws AuthenticationException {
+		...
+		for (AuthenticationProvider provider : getProviders()) {
+			if (!provider.supports(toTest)) {
+				continue;
+			}
+
+			try {
+				result = provider.authenticate(authentication);
+
+				if (result != null) {
+					copyDetails(authentication, result);
+					break;
+				}
+			}
+			catch (AccountStatusException | InternalAuthenticationServiceException e) {
+				prepareException(e, authentication);
+				// SEC-546: Avoid polling additional providers if auth failure is due to
+				// invalid account status
+				throw e;
+			} catch (AuthenticationException e) {
+				lastException = e;
+			}
+		}
+
+		if (result == null && parent != null) {
+			// Allow the parent to try.
+			try {
+				result = parentResult = parent.authenticate(authentication);
+			}
+			catch (ProviderNotFoundException e) {
+				// ignore as we will throw below if no other exception occurred prior to
+				// calling parent and the parent
+				// may throw ProviderNotFound even though a provider in the child already
+				// handled the request
+			}
+			catch (AuthenticationException e) {
+				lastException = parentException = e;
+			}
+		}
+        ...
+
+		throw lastException;
+	}
+}
+```
+
+- `ProviderManager`는 `List<AuthenticationProvider>`를 갖고 있어, 다른 여러 Provider 중에서 인증에 성공 한걸로
+인증을 완료한다.
+- `AuthenticationProvider`의 default로는 `AnonymousAuthenticationProvider`를 갖고 있는데 해당 부분은 조건을 충족하지 못해
+`reulst == null` 되고, `AnonymousAuthenticationProvider`는 parent를 갖고 있는데, parent는 `DaoAuthenticationProvider`이다.
+- 따라서 `DaoAuthenticationProvider`에 `authenticate`가 실행되게 된다.
+
+### DaoAuthenticationProvider
+
+```java
+public class DaoAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+	...
+	protected final UserDetails retrieveUser(String username,
+			UsernamePasswordAuthenticationToken authentication)
+			throws AuthenticationException {
+		prepareTimingAttackProtection();
+		try {
+			UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);
+			if (loadedUser == null) {
+				throw new InternalAuthenticationServiceException(
+						"UserDetailsService returned null, which is an interface contract violation");
+			}
+			return loadedUser;
+		}
+		catch (UsernameNotFoundException ex) {
+			mitigateAgainstTimingAttack(authentication);
+			throw ex;
+		}
+		catch (InternalAuthenticationServiceException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			throw new InternalAuthenticationServiceException(ex.getMessage(), ex);
+		}
+	}
+}
+```
+
+- `DaoAuthenticationProvider`는 `AbstractUserDetailsAuthenticationProvider`를 상속 받아서 `retrieveUser`만 구현되어 있다.
+- `retrieveUser`는 `UserDetailsService`를 통해서 `UserDetails`를 가져오는데, `UserDetails`가 인증된 유저의 데이터이다.
+- `UserDetailsService`를 통해서 인증 관련 `UserDetails` 데이터를 가져오는건 [이전 포스트]({% post_url spring-security/2020-08-01-spring-security-basic-userDetailsService %})에서 확인하였다.
+
+### AbstractUserDetailsAuthenticationProvider
+
+```java
+public abstract class AbstractUserDetailsAuthenticationProvider implements
+		AuthenticationProvider, InitializingBean, MessageSourceAware {
+
+	public Authentication authenticate(Authentication authentication)
+			throws AuthenticationException {
+		...
+
+		if (user == null) {
+			cacheWasUsed = false;
+
+			try {
+				user = retrieveUser(username,
+						(UsernamePasswordAuthenticationToken) authentication);
+			}
+			catch (UsernameNotFoundException notFound) {
+				logger.debug("User '" + username + "' not found");
+
+				if (hideUserNotFoundExceptions) {
+					throw new BadCredentialsException(messages.getMessage(
+							"AbstractUserDetailsAuthenticationProvider.badCredentials",
+							"Bad credentials"));
+				}
+				else {
+					throw notFound;
+				}
+			}
+
+			Assert.notNull(user,
+					"retrieveUser returned null - a violation of the interface contract");
+		}
+        ...
+		return createSuccessAuthentication(principalToReturn, authentication, user);
+	}
+}
+```
+
+- `AbstractUserDetailsAuthenticationProvider`는 `AuthenticationProvider`를 상속 받고 있다.
+- 따라서 해당 class에 `authenticate`이 실행되고 `retrieveUser`는 `DaoAuthenticationProvider`에 있는 메소드를 사용하게 된다.
+- 다시 역순으로 돌아가서, AuthenticationManager를 통해서 `SecurityContextHolder`에 필요한 `Authentication`을 얻을 수 있었다.
+- `Authentication`을 얻기까지 많은 Filter를 거치게 되는데, SpringSecurity에서는 어떤식으로 FilterChain이 이뤄지는지는 다음 포스트에서 알아보자.
+ 
 
 ## 마치며
+- 인증이 처리되는 과정이 하나씩 쫓아가면서 확인하였다.. 직접 디버깅을 해가면서 따라가지 않으면 아마 금방 까먹고 말 것이니,
+실제로 break point를 설정하고 디버깅을 통해서 직접 확인해보는게 좋아보인다! 
 - form 방식의 기본 설정만 추가하여 테스트를 진행하였기에, 다른 설정의 경우는 다르게 적용 될 수 있다
 - 하지만, 동작 방식을 알았으니, 디버깅을 통해서 확인을 해볼때 어느정도 쉽게 유추가 되지 않을까 싶다!
