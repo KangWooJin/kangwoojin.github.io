@@ -160,12 +160,12 @@ public void commence(HttpServletRequest request, HttpServletResponse response,
 ```
 
 - `WebSecurityConfigurerAdapter`에서 formLogin을 추가 해둔 경우 `AccessDeniedException`이 발생하게 되면,
-LoginUrlAuthenticationEntryPoint`에서 핸들링되고, `/login` page로 redirect 된다.
+`LoginUrlAuthenticationEntryPoint`에서 핸들링되고, `/login` page로 redirect 된다.
 
 ## AuthenticationException 처리 과정
 
 - `AuthenticationException`이 발생할려면, `AuthenticationEntryPoint`에서 exception이 발생하거나,
-항상 인증모드를 해서 `FilterSecurityInterceptor`에서 authentication을 하는 케이스에서마 발생 한다.
+항상 인증모드를 해서 `FilterSecurityInterceptor`에서 authentication을 하는 케이스에서만 발생 한다.
 - `AuthenticationException` 방식도 `AccessDeniedException`와 비슷하게 `AuthenticationEntryPoint`에서
 추가 인증을 시도하고 성공하면 넘어가고 실패하면 `AuthenticationException`이 발생하고 종료하게 된다.
 
