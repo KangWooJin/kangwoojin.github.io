@@ -115,6 +115,9 @@ protected Filter performBuild() throws Exception {
 
 ## FilterChainProxy 호출 과정
 
+- `FilterChainProxy`의 호출 과정은 `DelegatingFilterProxy` -> `FilterChainProxy`로 이뤄진다.
+- `DelegatingFilterProxy`가 언제 생성되서 `FilterChainProxy`랑 연결되는지 알아 본다.
+
 ### SecurityFilterAutoConfiguration
 
 ```java
@@ -142,6 +145,8 @@ public class SecurityFilterAutoConfiguration {
 
 - `SecurityFilterAutoConfiguration`에서 `DelegatingFilterProxyRegistrationBean`을 bean으로 등록하는데 그때 
 `DEFAULT_FILTER_NAME`은 `springSecurityFilterChain`으로 전달 한다.
+- `springSecurityFilterChain`은 앞에서 확인했던 `WebSecurityConfiguration`에서 bean으로 등록 되었고
+ 결과 값은 `FilterChainProxy`이다.
 
 ### DelegatingFilterProxyRegistrationBean
 
