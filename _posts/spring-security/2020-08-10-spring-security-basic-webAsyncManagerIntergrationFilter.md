@@ -6,7 +6,7 @@ tags:
   - SpringSecurity
 toc: true
 toc_sticky: true
-date: 2020-08-09 12:00:00+09:00
+date: 2020-08-10 23:00:00+09:00
 excerpt: Callable을 이용해 Async 방식의 response를 전달할때 SecurityContextHolder에 값이 어떻게 채워지는지 알아보자.
 ---
 
