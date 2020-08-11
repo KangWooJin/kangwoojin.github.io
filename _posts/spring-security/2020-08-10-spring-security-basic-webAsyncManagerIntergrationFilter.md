@@ -150,12 +150,16 @@ public void startCallableProcessing(final WebAsyncTask<?> webAsyncTask, Object..
 - 마지막으로 `applyPostProcess`에서 Async의 Thread에 할당된 `SecurityContext`를 clear하는 로직이 동작하게 된다.
 
 ## @Async를 이용하는 경우는 어떻게 되나?
-- `@Async`를 이용하는 경우 handler가 `CallableMethodReturnValueHandler`가 안될 수도 있으니, `SecurityContextHolder`에 값은
-비어 있다.
-- 어떻게 하면, 다른 Thread에도 `SecurityContextHolder` 제공할 수 있을까
+- `@Async`를 이용하는 경우 `WebAsyncManager`를 통해서 `SecurityContext`를 주입해주는 방식을 사용할 수 없으니,
+`SecurityContextHolder`의 값이 빈 값이 된다. 
+- 어떻게 하면, 다른 Thread에도 `SecurityContextHolder` 제공할 수 있는지 확인 해보자.
+
+### SecurityContextHolder strategy
 - [SecurityContextHolder]({% post_url spring-security/2020-08-06-spring-security-basic-security-context-holder %})
 에서 사용되는 ThreadLocal 전략에 대해서 알아보았다.
 - `SecurityContextHolder`의 `strategy`를 `MODE_THREADLOCAL`에서 `MODE_INHERITABLETHREADLOCAL`로 변경하면 된다.
+- 한번 설정하게 되면, application이 떠있는 동안 계속 적용되기에 Application load시에 적용해주면 된다.
+
 
 ```java
 public static void setStrategyName(String strategyName) {
@@ -205,13 +209,13 @@ private static void initialize() {
 ## 마치며
 - Callable request가 요청왔을 때 SecurityContextHolder에 값이 채워지고 사라지는 호출 순서는 아래와 같다.
 
-1. Callable Request 요청
-2. `WebAsyncManagerIntegrationFilter`에서 `WebAsyncManager`에 `SecurityContextCallableProcessingInterceptor` 등록
-3. Handler 처리기에서 `CallableMethodReturnValueHandler`가 선택되어 request 처리
-4. `applyBeforeConcurrentHandling`를 통해서 Async Thread로 넘어가기 전 현재 Thread에 있는 `SecurityContext`를 
+>1. Callable Request 요청
+>2. `WebAsyncManagerIntegrationFilter`에서 `WebAsyncManager`에 `SecurityContextCallableProcessingInterceptor` 등록
+>3. Handler 처리기에서 `CallableMethodReturnValueHandler`가 선택되어 request 처리
+>4. `applyBeforeConcurrentHandling`를 통해서 Async Thread로 넘어가기 전 현재 Thread에 있는 `SecurityContext`를 
  `SecurityContextCallableProcessingInterceptor`에 저장
-5. `applyPreProcess`에서 Async Thread에 SecurityContext set
-6. `applyPostProcess`에서 Async Thread에 SecurityContext clear
+>5. `applyPreProcess`에서 Async Thread에 SecurityContext set
+>6. `applyPostProcess`에서 Async Thread에 SecurityContext clear
 
 - `@Async`를 사용할 때, 즉 currentThread에서 다른 Thread로 넘어가게 되면 `SecurityContextHolder`의 값을
 공유하지 못 하게 된다.
