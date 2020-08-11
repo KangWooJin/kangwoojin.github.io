@@ -7,6 +7,7 @@ tags:
 toc: true
 toc_sticky: true
 date: 2020-08-10 23:00:00+09:00
+last_modified_at: 2020-08-11 23:00:00  
 excerpt: Callable을 이용해 Async 방식의 response를 전달할때 SecurityContextHolder에 값이 어떻게 채워지는지 알아보자.
 ---
 
@@ -148,6 +149,58 @@ public void startCallableProcessing(final WebAsyncTask<?> webAsyncTask, Object..
 - 그 후 `applyPreProcess`에서 `SecurityContext`를 `setContext` 해주고, `callable.call();`을 통해서 callable을 처리 한다.
 - 마지막으로 `applyPostProcess`에서 Async의 Thread에 할당된 `SecurityContext`를 clear하는 로직이 동작하게 된다.
 
+## @Async를 이용하는 경우는 어떻게 되나?
+- `@Async`를 이용하는 경우 handler가 `CallableMethodReturnValueHandler`가 안될 수도 있으니, `SecurityContextHolder`에 값은
+비어 있다.
+- 어떻게 하면, 다른 Thread에도 `SecurityContextHolder` 제공할 수 있을까
+- [SecurityContextHolder]({% post_url spring-security/2020-08-06-spring-security-basic-security-context-holder %})
+에서 사용되는 ThreadLocal 전략에 대해서 알아보았다.
+- `SecurityContextHolder`의 `strategy`를 `MODE_THREADLOCAL`에서 `MODE_INHERITABLETHREADLOCAL`로 변경하면 된다.
+
+```java
+public static void setStrategyName(String strategyName) {
+    SecurityContextHolder.strategyName = strategyName;
+    initialize();
+}
+```
+
+- `SecurityContextHolder`에 `setStrategyName`를 통해서 strategy를 변경하게 되면,
+`initialize()`를 통해서 ThreadLocal의 종류가 바뀌게 된다.
+
+```java
+private static void initialize() {
+  if (!StringUtils.hasText(strategyName)) {
+    // Set default
+		strategyName = MODE_THREADLOCAL;
+  }
+
+  if (strategyName.equals(MODE_THREADLOCAL)) {
+    strategy = new ThreadLocalSecurityContextHolderStrategy();
+  }
+  else if (strategyName.equals(MODE_INHERITABLETHREADLOCAL)) {
+    strategy = new InheritableThreadLocalSecurityContextHolderStrategy();
+  }
+  else if (strategyName.equals(MODE_GLOBAL)) {
+    strategy = new GlobalSecurityContextHolderStrategy();
+  }
+  else {
+    // Try to load a custom strategy
+		try {
+		  Class<?> clazz = Class.forName(strategyName);
+		  Constructor<?> customStrategy = clazz.getConstructor();
+		  strategy = (SecurityContextHolderStrategy) customStrategy.newInstance();
+		}
+		catch (Exception ex) {
+		  ReflectionUtils.handleReflectionException(ex);
+		}
+  }
+  initializeCount++;
+}
+```
+
+- 종류는 총 3가지가 존재하며, default는 `MODE_THREADLOCAL`로 사용 된다.
+- `MODE_GLOBAL`의 경우는 전체 Thread에 공통된 값을 가지게 설정하게 된다.
+
 
 ## 마치며
 - Callable request가 요청왔을 때 SecurityContextHolder에 값이 채워지고 사라지는 호출 순서는 아래와 같다.
@@ -159,3 +212,7 @@ public void startCallableProcessing(final WebAsyncTask<?> webAsyncTask, Object..
  `SecurityContextCallableProcessingInterceptor`에 저장
 5. `applyPreProcess`에서 Async Thread에 SecurityContext set
 6. `applyPostProcess`에서 Async Thread에 SecurityContext clear
+
+- `@Async`를 사용할 때, 즉 currentThread에서 다른 Thread로 넘어가게 되면 `SecurityContextHolder`의 값을
+공유하지 못 하게 된다.
+- 공유하기 위해서는 `SecurityContextHolder`의 ThreadLocal strategy를 `MODE_INHERITABLETHREADLOCAL`로 변경 하면 해결할 수 있다.
