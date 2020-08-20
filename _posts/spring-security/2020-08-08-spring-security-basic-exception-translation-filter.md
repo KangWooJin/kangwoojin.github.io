@@ -133,7 +133,7 @@ protected void sendStartAuthentication(HttpServletRequest request,
 }
 ```
 
-- `sendStartAuthentication`에서 `authenticationEntryPoint`
+- `sendStartAuthentication`에서 `authenticationEntryPoint`에서 추가 인증을 진행 한다.
 
 ### AuthenticationEntryPoint
 
